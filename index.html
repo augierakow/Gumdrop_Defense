@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background-color: midnightblue;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .gumdrop {
+      position: absolute;
+      width: 50px;
+      height: 70px;
+      background-color: red;
+      border-radius: 50% 50% 20% 20% / 50% 50% 30% 30%;
+      box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+      background-image: radial-gradient(ellipse at center, #ff6666 0%, #cc0000 75%);
+      overflow: visible;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .shadow {
+      position: absolute;
+      width: 50%;
+      height: 10px;
+      bottom: 2px;
+      left: 25%;
+      border-radius: 50%;
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+
+    .eye {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background-color: black;
+      border-radius: 50%;
+      overflow: hidden;
+    }
+
+    .eye.left {
+      top: 30px;
+      left: 18px;
+    }
+
+    .eye.right {
+      top: 30px;
+      left: 34px;
+    }
+
+    .gleam {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      background-color: white;
+      border-radius: 50%;
+      top: 1px;
+      left: 1px;
+    }
+
+    .mouth {
+      position: absolute;
+      width: 20px;
+      height: 5px;
+      background-color: black;
+      top: 45px;
+      left: 15px;
+      border-radius: 50%;
+    }
+
+    .gun {
+      position: absolute;
+      width: 40px;
+      height: 12px;
+      background-color: #333;
+      top: 50px;
+      left: 50px;
+      border-radius: 2px 8px 8px 2px;
+      transform-origin: 0% 50%;
+    }
+
+    .gun:before {
+      content: '';
+      position: absolute;
+      width: 15px;
+      height: 6px;
+      background-color: #333;
+      left: -14px;
+      top: 3px;
+      border-radius: 2px 5px 5px 2px;
+    }
+
+    .gun:after {
+      content: '';
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-image: radial-gradient(circle at 35% 50%, rgba(0, 0, 0, 0.8) 30%, transparent 70%);
+      top: 0.5px;
+      left: 29px;
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    }
+
+    #bullet {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background-color: gold;
+      visibility: hidden;
+      left: 0;
+      top: 0;
+    }
+
+    .target {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      background-color: gray;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="gumdrop">
+    <div class="shadow"></div>
+    <div class="eye left">
+      <div class="gleam"></div>
+    </div>
+    <div class="eye right">
+      <div class="gleam"></div>
+    </div>
+    <div class="mouth"></div>
+    <div class="gun" id="gun"></div>
+    <div id="bullet"></div>
+  </div>
+  <script>
+    var gun = document.getElementById('gun');
+    var angle = 0;
+    var bullet = document.getElementById('bullet');
+    var bulletAngle = 0;
+    var bulletSpeed = 10;
+    var bulletInterval;
+
+    document.onkeydown = function(e) {
+      switch (e.keyCode) {
+        case 37: // left arrow
+          angle -= 5;
+          gun.style.transform = "rotate(" + angle + "deg)";
+          break;
+        case 39: // right arrow
+          angle += 5;
+          gun.style.transform = "rotate(" + angle + "deg)";
+          break;
+        case 32: // space bar
+          fireBullet();
+          break;
+      }
+    }
+
+    function fireBullet() {
+      bullet.style.visibility = "visible";
+      var gumdrop = document.querySelector('.gumdrop');
+      var gunRect = gun.getBoundingClientRect();
+      var gumdropRect = gumdrop.getBoundingClientRect();
+      var leftOffset = gunRect.left - gumdropRect.left;
+      var topOffset = gunRect.top - gumdropRect.top;
+      bullet.style.left = leftOffset + gunRect.width / 2 - bullet.offsetWidth / 2 + "px";
+      bullet.style.top = topOffset + gunRect.height / 2 - bullet.offsetHeight / 2 + "px";
+      bulletAngle = angle;
+      bulletInterval = setInterval(moveBullet, 10);
+    }
+
+    function moveBullet() {
+      var radians = bulletAngle * Math.PI / 180;
+      var dx = bulletSpeed * Math.cos(radians);
+      var dy = bulletSpeed * Math.sin(radians);
+      var x = parseFloat(bullet.style.left) + dx;
+      var y = parseFloat(bullet.style.top) + dy;
+
+      var gumdrop = document.querySelector('.gumdrop');
+      var gumdropRect = gumdrop.getBoundingClientRect();
+      
+      // check if bullet has gone off screen in the direction of its movement
+      if ((dx > 0 && x > window.innerWidth) || (dx < 0 && x < -bullet.offsetWidth) ||
+          (dy > 0 && y > window.innerHeight) || (dy < 0 && y < -bullet.offsetHeight)) {
+          clearInterval(bulletInterval);
+        bullet.style.visibility = "hidden";
+      } else {
+        bullet.style.left = x + "px";
+        bullet.style.top = y + "px";
+      }
+
+      var targets = document.getElementsByClassName("target");
+      for (var i = 0; i < targets.length; i++) {
+        if (checkCollision(bullet, targets[i])) {
+          clearInterval(bulletInterval);
+          bullet.style.visibility = "hidden";
+          targets[i].parentNode.removeChild(targets[i]);
+        }
+      }
+    }
+
+    function checkCollision(a, b) {
+      var aRect = a.getBoundingClientRect();
+      var bRect = b.getBoundingClientRect();
+      return !(
+        (aRect.bottom < bRect.top) || (aRect.top > bRect.bottom) ||
+        (aRect.right < bRect.left) || (aRect.left > bRect.right)
+      );
+    }
+
+    // Set up the targets
+    var numTargets = 10;
+    for (var i = 0; i < numTargets; i++) {
+      var target = document.createElement("div");
+      target.className = "target";
+      target.style.left = Math.floor(Math.random() * (window.innerWidth - 30)) + "px";
+      target.style.top = Math.floor(Math.random() * (window.innerHeight - 30)) + "px";
+      document.body.appendChild(target);
+    }
+
+  </script>
+</body>
+</html>
