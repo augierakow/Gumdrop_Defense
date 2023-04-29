@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joke of the Day</title>
+    <style>
+        body, canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        h1 {
+            color: #4a4a4a;
+            font-size: 48px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            z-index: 1;
+        }
+        p#joke {
+            color: #333;
+            font-size: 24px;
+            font-weight: normal;
+            text-align: center;
+            max-width: 80%;
+            line-height: 1.5;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            z-index: 1;
+        }
+        #h1-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px px rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            padding: 5px;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="illusion"></canvas>
+    <div id="h1-container">
+        <h1>Joke of the Day</h1>
+    </div>
+    <p id="joke"></p>
+    <script>
+        const jokes = [
+            "Why did the smartphone go to art school? It wanted to learn how to draw a better 'cell-fie'.",
+            "Why was the math book unhappy? It had too many problems.",
+            "Why did the coffee file a police report? It got mugged.",
+            "What's a programmer's favorite type of candy? Syntax sugar.",
+            "Why are ghosts bad liars? Because they're too transparent."
+        ];
+
+        document.getElementById('joke').innerText = jokes[Math.floor(Math.random() * jokes.length)];
+
+        const canvas = document.getElementById('illusion');
+        const ctx = canvas.getContext('2d');
+        const circles = [];
+        let mousePosition = { x: 0, y: 0 };
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        function createCircle() {
+            const radius = Math.random() * 50 + 10;
+            circles.push({
+                x: mousePosition.x,
+                y: mousePosition.y,
+                radius: radius,
+                color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+                lineWidth: Math.random() * 10 + 2
+            });
+        }
+
+        function createRoundedClipPath(x, y, width, height, radius) {
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width - radius, y);
+            ctx.arcTo(x + width, y, x + width, y + radius, radius);
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.arcTo(x + width, y + height, x + width - radius, y + height, radius);
+            ctx.lineTo(x + radius, y + height);
+            ctx.arcTo(x, y + height, x, y + height - radius, radius);
+            ctx.lineTo(x, y + radius);
+            ctx.arcTo(x, y, x + radius, y, radius);
+            ctx.closePath();
+            ctx.clip();
+        }
+
+        function animateCircles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const jokeElement = document.getElementById('joke');
+            const jokeRect = jokeElement.getBoundingClientRect();
+            const h1Element = document.querySelector('h1');
+            const h1Rect = h1Element.getBoundingClientRect();
+            const padding = 20;
+            const radius = 10;
+
+            for (let i = 0; i < circles.length; i++) {
+                const circle = circles[i];
+                ctx.beginPath();
+                ctx.arc(circle.x, circle.y, circle.radius, 0, Math.PI * 2);
+                ctx.lineWidth = circle.lineWidth;
+                ctx.strokeStyle = circle.color;
+                ctx.stroke();
+                circle.radius += 1;
+                circle.lineWidth -= 0.1;
+
+                if (circle.lineWidth <= 0) {
+                    circles.splice(i, 1);
+                    i--;
+                }
+            }
+
+            ctx.save();
+            // Create clipping region for the joke text
+            createRoundedClipPath(jokeRect.x - padding, jokeRect.y - padding, jokeRect.width + 2 * padding, jokeRect.height + 2 * padding, radius);
+
+            // Create clipping region for the H1 text
+            createRoundedClipPath(h1Rect.x - padding, h1Rect.y - padding, h1Rect.width + 2 * padding, h1Rect.height + 2 * padding, radius);
+            ctx.restore();
+
+            requestAnimationFrame(animateCircles);
+        }
+
+        resizeCanvas();
+        animateCircles();
+        window.addEventListener('resize', resizeCanvas);
+        canvas.addEventListener('mousemove', (event) => {
+            mousePosition.x = event.clientX;
+            mousePosition.y = event.clientY;
+            createCircle();
+        });
+    </script>
+</body>
+</html>
+

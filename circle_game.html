@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circle Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: skyblue;
+        }
+        .welcome-screen, .game-screen {
+            display: none;
+        }
+        .circle {
+            width: 25px;
+            height: 25px;
+            background-color: #c0c0c0;
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            left: calc(50% - 25px);
+        }
+        .bucket {
+            width: 100px;
+            height: 50px;
+            background-color: #000;
+            position: absolute;
+            bottom: 0;
+            left: calc(50% - 50px);
+            z-index: 1; /* Add this line */
+        }
+        button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+        .game-screen {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            background-color: #191970;
+            overflow: hidden;
+        }
+        .star {
+            position: absolute;
+            background-color: white;
+            width: 2px;
+            height: 2px;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-screen">
+        <h1>Welcome to the Circle Game</h1>
+        <button id="playButton">Play</button>
+    </div>
+    <div class="game-screen">
+        <div class="circle"></div>
+        <div class="bucket"></div>
+        <div class="fireworks"></div>
+    </div>
+    <script>
+        function createStars() {
+            const gameScreen = document.querySelector(".game-screen");
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement("div");
+                star.classList.add("star");
+                star.style.top = Math.random() * 100 + "vh";
+                star.style.left = Math.random() * 100 + "vw";
+                gameScreen.appendChild(star);
+            }
+        }
+
+        function dropCircle() {
+            const circle = document.querySelector(".circle");
+            const bucket = document.querySelector(".bucket");
+            const screenHeight = document.documentElement.clientHeight;
+            const circleHeight = circle.clientHeight;
+            const duration = 1000;
+            const startTime = Date.now();
+
+            function animate() {
+                const currentTime = Date.now();
+                const progress = Math.min((currentTime - startTime) / duration, 1);
+                circle.style.top = ((screenHeight - circleHeight) * progress) + 'px';
+
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    const circleX = circle.offsetLeft + circle.clientWidth / 2;
+                    const circleY = circle.offsetTop + circle.clientHeight / 2;
+                    const bucketX1 = bucket.offsetLeft;
+                    const bucketX2 = bucket.offsetLeft + bucket.clientWidth;
+                    const bucketY = bucket.offsetTop + bucket.clientHeight;
+                    if (circleX >= bucketX1 && circleX <= bucketX2 && circleY >= bucketY) {
+                        animateFireworks();
+                    }
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        function animateFireworks() {
+            const fireworks = document.querySelector(".fireworks");
+            fireworks.innerHTML = ""; // Clear any previous fireworks
+
+            const colors = ["#ff0", "#f00", "#0f0", "#00f", "#f0f", "#0ff"];
+            const duration = 2000;
+            const numParticles = 50;
+
+            for (let i = 0; i < numParticles; i++) {
+                const particle = document.createElement("div");
+                particle.classList.add("firework-particle");
+                particle.style.backgroundColor = colors[i % colors.length];
+                particle.style.left = Math.random() * 100 + "vw";
+                particle.style.top = Math.random() * 60 + "vh";
+                fireworks.appendChild(particle);
+            }
+
+        function animateParticles() {
+            const particles = document.querySelectorAll(".firework-particle");
+            const currentTime = Date.now();
+            const progress = Math.min((currentTime - startTime) / duration, 1);
+
+            particles.forEach(particle => {
+                const angle = particle.getAttribute("data-angle");
+                const speed = particle.getAttribute("data-speed");
+                const x = parseFloat(particle.style.left);
+                const y = parseFloat(particle.style.top);
+                const dx = speed * Math.cos(angle);
+                const dy = speed * Math.sin(angle);
+                particle.style.left = x + dx + "px";
+                particle.style.top = y + dy + "px";
+                particle.style.opacity = 1 - progress;
+            });
+
+            if (progress < 1) {
+                requestAnimationFrame(animateParticles);
+            }
+        }
+
+        const startTime = Date.now();
+        animateParticles();
+    }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const welcomeScreen = document.querySelector(".welcome-screen");
+            const gameScreen = document.querySelector(".game-screen");
+            const playButton = document.getElementById("playButton");
+
+            welcomeScreen.style.display = "block";
+
+            playButton.addEventListener("click", function() {
+                welcomeScreen.style.display = "none";
+                gameScreen.style.display = "block";
+                createStars();
+                dropCircle();
+            });
+        });
+    </script>
+</body>
+</html>
