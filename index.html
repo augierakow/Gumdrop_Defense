@@ -112,7 +112,7 @@
     }
 
     #bullet {
-      position: absolute;
+      position: fixed;
       width: 10px;
       height: 10px;
       background-color: gold;
@@ -191,9 +191,9 @@
       var gumdropRect = gumdrop.getBoundingClientRect();
       
       // check if bullet has gone off screen in the direction of its movement
-      if (x < -bullet.offsetWidth || x > window.innerWidth ||
-          y < -bullet.offsetHeight || y > window.innerHeight) {
-        clearInterval(bulletInterval);
+      if ((dx > 0 && x > window.innerWidth) || (dx < 0 && x < -bullet.offsetWidth) ||
+          (dy > 0 && y > window.innerHeight) || (dy < 0 && y < -bullet.offsetHeight)) {
+          clearInterval(bulletInterval);
         bullet.style.visibility = "hidden";
       } else {
         bullet.style.left = x + "px";
