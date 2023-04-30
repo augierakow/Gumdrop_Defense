@@ -144,13 +144,9 @@
     <div id="bullet"></div>
   </div>
   <script>
+		// Set up the gun rotation
     var gun = document.getElementById('gun');
     var angle = 0;
-    var bullet = document.getElementById('bullet');
-    var bulletAngle = 0;
-    var bulletSpeed = 10;
-    var bulletInterval;
-
     document.onkeydown = function(e) {
       switch (e.keyCode) {
         case 37: // left arrow
@@ -167,13 +163,18 @@
       }
     }
 
+    // Set up the bullet firing
+    var bullet = document.getElementById('bullet');
+    var bulletAngle = 0;
+    var bulletSpeed = 10;
+    var bulletInterval;
     function fireBullet() {
-      bullet.style.visibility = "visible";
       var gumdrop = document.querySelector('.gumdrop');
       var gunRect = gun.getBoundingClientRect();
       var gumdropRect = gumdrop.getBoundingClientRect();
       var leftOffset = gunRect.left - gumdropRect.left;
       var topOffset = gunRect.top - gumdropRect.top;
+      bullet.style.visibility = "visible";
       bullet.style.left = leftOffset + gunRect.width / 2 - bullet.offsetWidth / 2 + "px";
       bullet.style.top = topOffset + gunRect.height / 2 - bullet.offsetHeight / 2 + "px";
       bulletAngle = angle;
@@ -187,18 +188,16 @@
       var x = parseFloat(bullet.style.left) + dx;
       var y = parseFloat(bullet.style.top) + dy;
 
-      var gumdrop = document.querySelector('.gumdrop');
-      var gumdropRect = gumdrop.getBoundingClientRect();
-      
-      // check if bullet has gone off screen in the direction of its movement
-      if ((dx > 0 && x > window.innerWidth) || (dx < 0 && x < -bullet.offsetWidth) ||
-          (dy > 0 && y > window.innerHeight) || (dy < 0 && y < -bullet.offsetHeight)) {
-          clearInterval(bulletInterval);
+      bullet.style.left = x + "px";
+      bullet.style.top = y + "px";
+
+/*  This makes the bullet disappear when fired up or to the left.
+
+      if (x < 0 || x > window.innerWidth || y < 0 || y > window.innerHeight) {
+        clearInterval(bulletInterval);
         bullet.style.visibility = "hidden";
-      } else {
-        bullet.style.left = x + "px";
-        bullet.style.top = y + "px";
       }
+*/
 
       var targets = document.getElementsByClassName("target");
       for (var i = 0; i < targets.length; i++) {

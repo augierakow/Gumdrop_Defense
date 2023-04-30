@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Asteroids Game</title>
+	<title>Rotating Shooter</title>
 	<style>
 		#game {
 			width: 400px;
@@ -19,7 +19,20 @@
 			top: 175px;
 			transform-origin: center center;
 		}
-
+/*
+		#gumdrop {
+			width: 50px;
+			height: 70px;
+			background-color: red;
+			border-radius: 50% 50% 20% 20% / 50% 50% 30% 30%;
+			box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+			background-image: radial-gradient(ellipse at center, #ff6666 0%, #cc0000 75%);
+			overflow: visible;
+			left: 50%;
+			top: 50%;
+			transform: translate(-50%, -50%);
+			}
+*/
 		#bullet {
 			width: 10px;
 			height: 10px;
@@ -75,16 +88,19 @@
 			bulletAngle = angle;
 			bulletInterval = setInterval(moveBullet, 10);
 		}
+		
 		function moveBullet() {
 			var radians = bulletAngle * Math.PI / 180;
 			var x = parseFloat(bullet.style.left) + bulletSpeed * Math.sin(radians);
 			var y = parseFloat(bullet.style.top) - bulletSpeed * Math.cos(radians);
 			bullet.style.left = x + "px";
 			bullet.style.top = y + "px";
+
 			if (x < 0 || x > 400 || y < 0 || y > 400) {
 				clearInterval(bulletInterval);
 				bullet.style.visibility = "hidden";
 			}
+			
 			var targets = document.getElementsByClassName("target");
 			for (var i = 0; i < targets.length; i++) {
 				if (checkCollision(bullet, targets[i])) {
@@ -94,6 +110,7 @@
 				}
 			}
 		}
+
 		function checkCollision(a, b) {
 			var aRect = a.getBoundingClientRect();
 			var bRect = b.getBoundingClientRect();
