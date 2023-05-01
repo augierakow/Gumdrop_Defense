@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
   <style>
     body {
       background-color: midnightblue;
@@ -127,9 +128,9 @@
       height: 30px;
       background-color: gray;
     }
-
   </style>
 </head>
+	
 <body>
   <div class="gumdrop">
     <div class="shadow"></div>
@@ -143,8 +144,11 @@
     <div class="gun" id="gun"></div>
     <div id="bullet"></div>
   </div>
-  <script>
-		// Set up the gun rotation
+	
+	
+  <script>	// Javascript Animations
+    
+    // Set up the gun rotation
     var gun = document.getElementById('gun');
     var angle = 0;
     document.onkeydown = function(e) {
@@ -180,7 +184,8 @@
       bulletAngle = angle;
       bulletInterval = setInterval(moveBullet, 10);
     }
-
+	  
+    // Set up the bullet moving
     function moveBullet() {
       var radians = bulletAngle * Math.PI / 180;
       var dx = bulletSpeed * Math.cos(radians);
@@ -191,14 +196,19 @@
       bullet.style.left = x + "px";
       bullet.style.top = y + "px";
 
-/*  This makes the bullet disappear when fired up or to the left.
-
+      /* The folling if-statment checks if the bullet exceeds the
+	 boundaries of the game window, so that it can clear the 
+	 interval calculating the bullet's movement. For some reason,
+	 it makes the bullet diseappear immediately after being fired, 
+	 when fired up or to the left.    
+      
       if (x < 0 || x > window.innerWidth || y < 0 || y > window.innerHeight) {
         clearInterval(bulletInterval);
         bullet.style.visibility = "hidden";
       }
-*/
-
+        
+      */
+	    
       var targets = document.getElementsByClassName("target");
       for (var i = 0; i < targets.length; i++) {
         if (checkCollision(bullet, targets[i])) {
@@ -209,6 +219,8 @@
       }
     }
 
+	 
+    // Set up the targets exploding
     function checkCollision(a, b) {
       var aRect = a.getBoundingClientRect();
       var bRect = b.getBoundingClientRect();
