@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	
-  // CSS STYLES
+  <!-- CSS STYLES -->
   <style>
     body {
       background-color: midnightblue;
@@ -146,7 +146,7 @@
     <div id="bullet"></div>
   </div>
 	
-  // JAVASCRIPT ANIMATIONS
+  <!-- JAVASCRIPT ANIMATIONS -->
   <script>	
     // Set up the gun rotation
     var gun = document.getElementById('gun');
@@ -196,17 +196,15 @@
       bullet.style.left = x + "px";
       bullet.style.top = y + "px";
 
-      /* The folling if-statment checks if the bullet exceeds the
-	 boundaries of the game window, so that it can clear the 
-	 interval calculating the bullet's movement. For some reason,
-	 it makes the bullet diseappear immediately after being fired, 
-	 when fired up or to the left.    
+      // Check if the bullet is out of the game window
+      // Note: Makes bullet diseappear immediately when 
+      //       fired up or left.     
       
+      /*
       if (x < 0 || x > window.innerWidth || y < 0 || y > window.innerHeight) {
         clearInterval(bulletInterval);
         bullet.style.visibility = "hidden";
       }
-      
       */    
       
       // Check for collision as part of moveBullet() function
@@ -220,7 +218,7 @@
       }
     }
 	 
-    // Check for collision, as part of targets exploding (?)
+    // Check for collision between two elements
     function checkCollision(a, b) {
       var aRect = a.getBoundingClientRect();
       var bRect = b.getBoundingClientRect();
