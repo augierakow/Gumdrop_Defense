@@ -196,11 +196,12 @@
       bullet.style.left = x + "px";
       bullet.style.top = y + "px";
 
-      // Check if the bullet is out of the game window
-      // Note: Makes bullet diseappear immediately when 
-      //       fired up or left.     
-      
-      /*
+      /* The folling if-statement checks if the bullet exceeds the
+         boundaries of the game window, so that it can clear the
+	 interval calculating the bullet's movement. For some reason
+	 it was making the bullet disappear immediately after
+	 being fired up or to the left.
+	 
       if (x < 0 || x > window.innerWidth || y < 0 || y > window.innerHeight) {
         clearInterval(bulletInterval);
         bullet.style.visibility = "hidden";
